@@ -1,0 +1,33 @@
+name: xero-blade-mcp
+description: >
+  Xero Accounting + Payroll AU API operations — contacts, invoices, bills,
+  bank transactions, payments, reports, and payroll. Token-efficient with
+  pipe-delimited output, field selection, and human-readable money.
+  Write-gated with confirm gate for destructive operations. OAuth2 with
+  automatic token refresh.
+version: 0.1.0
+author: groupthink-dev
+licence: MIT
+tier: certified
+contract: accounting-v1
+repository: https://github.com/groupthink-dev/xero-blade-mcp
+
+install:
+  runtime: uv
+  package: xero-blade-mcp
+
+environment:
+  required:
+    - XERO_CLIENT_ID
+    - XERO_CLIENT_SECRET
+  optional:
+    - XERO_ACCESS_TOKEN
+    - XERO_TENANT_ID
+    - XERO_WRITE_ENABLED
+    - XERO_WEBHOOK_KEY
+    - XERO_MCP_API_TOKEN
+    - XERO_MCP_TRANSPORT
+    - XERO_MCP_HOST
+    - XERO_MCP_PORT
+
+tools: 53
