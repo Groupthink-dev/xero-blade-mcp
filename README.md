@@ -10,7 +10,7 @@ The [official Xero MCP](https://github.com/XeroAPI/xero-mcp-server) is a raw API
 
 xero-blade-mcp is purpose-built for LLM agents operating on financial data:
 
-- **SecOps** -- Mandatory write gating, confirm gate for destructive operations (void, delete, archive), credential scrubbing in all error paths, OAuth2 token auto-refresh with secure local storage
+- **SecOps** -- Mandatory write gating, confirm gate for destructive operations (void, delete, archive), credential scrubbing in all error paths, OAuth2 token auto-refresh, in-memory-only tokens for client_credentials mode (no secrets written to disk)
 - **Token efficiency** -- Pipe-delimited lists, field selection, human-readable money (A$150.00 AUD), null-field omission, date formatting, pagination hints -- not raw JSON dumps
 - **Sidereal ecosystem** -- `accounting-v1` contract, plugin manifest, webhook HMAC-SHA256 verification for dispatch integration, HTTP transport mode for daemon routing
 
@@ -29,7 +29,7 @@ xero-blade-mcp is purpose-built for LLM agents operating on financial data:
 | Reports | P&L, Balance Sheet, Trial Balance, Aged AR/AP | Yes | Limited |
 | Multi-tenant | XERO_TENANT_ID + discovery tool | Yes | Yes |
 | Auth modes | Custom Connection + PKCE + static token | Custom Connection + Bearer | OAuth2 |
-| Tests | 413 unit tests | Undisclosed | Partial |
+| Tests | 414 unit tests | Undisclosed | Partial |
 | Sidereal integration | accounting-v1 contract, plugin manifest | None | None |
 | Runtime | Python (uv) | Node.js (npx) | Node.js |
 
@@ -98,7 +98,7 @@ Three modes, in priority order:
 |---|---|---|
 | **Static token** | `XERO_ACCESS_TOKEN` | Testing, short-lived (30 min expiry) |
 | **Custom Connection** | `XERO_CLIENT_ID` + `XERO_CLIENT_SECRET` | Production MCP (recommended, auto-refresh) |
-| **Stored tokens** | `XERO_CLIENT_ID` | After initial PKCE flow, tokens at `~/.xero-blade-mcp/tokens.json` |
+| **Stored tokens** | `XERO_CLIENT_ID` | After initial PKCE flow (tokens persisted to `~/.xero-blade-mcp/tokens.json` only when refresh_token is present) |
 
 ### Setting up a Custom Connection
 
@@ -298,7 +298,7 @@ cd xero-blade-mcp
 make install-dev
 
 # Test
-make test           # 413 unit tests
+make test           # 414 unit tests
 make test-cov       # with coverage report
 
 # Quality
