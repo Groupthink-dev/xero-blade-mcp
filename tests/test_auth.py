@@ -101,10 +101,21 @@ class TestTokenStore:
         monkeypatch.setattr("xero_blade_mcp.auth.TOKEN_FILE", tmp_path / "tokens.json")
 
         store = TokenStore()
-        store.update({"access_token": "tok"})
+        store.update({"access_token": "tok", "refresh_token": "ref"})
 
         token_file = tmp_path / "tokens.json"
         assert oct(token_file.stat().st_mode)[-3:] == "600"
+
+    def test_no_file_written_without_refresh_token(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Client-credentials tokens (no refresh_token) stay in memory only."""
+        monkeypatch.setattr("xero_blade_mcp.auth.TOKEN_DIR", tmp_path)
+        monkeypatch.setattr("xero_blade_mcp.auth.TOKEN_FILE", tmp_path / "tokens.json")
+
+        store = TokenStore()
+        store.update({"access_token": "tok", "expires_in": 1800})
+
+        assert not (tmp_path / "tokens.json").exists()
+        assert store.access_token == "tok"
 
     def test_load_returns_true_with_valid_file(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         token_file = tmp_path / "tokens.json"

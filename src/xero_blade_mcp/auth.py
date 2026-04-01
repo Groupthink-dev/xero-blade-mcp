@@ -33,7 +33,12 @@ class AuthError(Exception):
 
 
 class TokenStore:
-    """Manages OAuth2 token persistence and refresh."""
+    """Manages OAuth2 token persistence and refresh.
+
+    Tokens are only persisted to disk when a refresh_token is present
+    (PKCE flow).  Client-credentials tokens stay in memory — they can
+    be re-obtained from env vars and should not be written to disk.
+    """
 
     def __init__(self) -> None:
         self._access_token: str | None = None
@@ -68,7 +73,10 @@ class TokenStore:
         self._refresh_token = token_response.get("refresh_token", self._refresh_token)
         expires_in = token_response.get("expires_in", 1800)  # Xero default: 30 min
         self._expires_at = time.time() + expires_in
-        self._save()
+        # Only persist when we have a refresh token (PKCE flow).
+        # Client-credentials tokens stay in memory only.
+        if self._refresh_token:
+            self._save()
 
     def _save(self) -> None:
         """Persist tokens to disk."""
