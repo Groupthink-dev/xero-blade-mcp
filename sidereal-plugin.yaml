@@ -1,33 +1,165 @@
 name: xero-blade-mcp
-description: >
-  Xero Accounting + Payroll AU API operations — contacts, invoices, bills,
-  bank transactions, payments, reports, and payroll. Token-efficient with
-  pipe-delimited output, field selection, and human-readable money.
-  Write-gated with confirm gate for destructive operations. OAuth2 with
-  automatic token refresh.
-version: 0.1.0
+version: "0.1.0"
+description: "Xero Accounting + Payroll AU API operations — contacts, invoices, bills, bank transactions, payments, reports, and payroll. Token-efficient with pipe-delimited output and OAuth2 auto-refresh."
 author: groupthink-dev
 licence: MIT
 tier: certified
+author_type: first-party
+readiness: beta
+homepage: https://github.com/Groupthink-dev/xero-blade-mcp
 contract: accounting-v1
-repository: https://github.com/groupthink-dev/xero-blade-mcp
+
+services:
+  accounting:
+    # Meta
+    info: xero_info
+    connections: xero_connections
+    organisation: xero_organisation
+    # Contacts
+    contacts: xero_contacts
+    contact: xero_contact
+    create_contact: xero_create_contact
+    update_contact: xero_update_contact
+    archive_contact: xero_archive_contact
+    # Invoices
+    invoices: xero_invoices
+    invoice: xero_invoice
+    create_invoice: xero_create_invoice
+    update_invoice: xero_update_invoice
+    void_invoice: xero_void_invoice
+    email_invoice: xero_email_invoice
+    # Bills
+    bills: xero_bills
+    bill: xero_bill
+    create_bill: xero_create_bill
+    void_bill: xero_void_bill
+    # Bank Transactions
+    bank_transactions: xero_bank_transactions
+    bank_transaction: xero_bank_transaction
+    create_bank_transaction: xero_create_bank_transaction
+    # Payments
+    payments: xero_payments
+    payment: xero_payment
+    create_payment: xero_create_payment
+    delete_payment: xero_delete_payment
+    # Credit Notes
+    credit_notes: xero_credit_notes
+    create_credit_note: xero_create_credit_note
+    void_credit_note: xero_void_credit_note
+    # Purchase Orders
+    purchase_orders: xero_purchase_orders
+    create_purchase_order: xero_create_purchase_order
+    # Quotes
+    quotes: xero_quotes
+    create_quote: xero_create_quote
+    # Accounts
+    accounts: xero_accounts
+    account: xero_account
+    # Manual Journals
+    manual_journals: xero_manual_journals
+    # Reports
+    profit_loss: xero_profit_loss
+    balance_sheet: xero_balance_sheet
+    trial_balance: xero_trial_balance
+    aged_receivables: xero_aged_receivables
+    aged_payables: xero_aged_payables
+    # Reference Data
+    tax_rates: xero_tax_rates
+    currencies: xero_currencies
+    tracking_categories: xero_tracking_categories
+    branding_themes: xero_branding_themes
+    # Payroll AU
+    employees: xero_employees
+    employee: xero_employee
+    timesheets: xero_timesheets
+    timesheet: xero_timesheet
+    create_timesheet: xero_create_timesheet
+    approve_timesheet: xero_approve_timesheet
+    payslips: xero_payslips
+    payslip: xero_payslip
+    # Webhooks
+    verify_webhook: xero_verify_webhook
+
+setup:
+  auth_model: oauth2
+  complexity: moderate
+  icon: "building.columns"
+  product: "Xero"
+  blurb: "Connect to Xero for accounting, invoicing, payments, and payroll. OAuth2 with automatic token refresh."
+  fields:
+    - key: XERO_CLIENT_ID
+      label: "Client ID"
+      secret: false
+      required: true
+      placeholder: "OAuth2 client ID from developer.xero.com"
+    - key: XERO_CLIENT_SECRET
+      label: "Client Secret"
+      secret: true
+      required: true
+      placeholder: "OAuth2 client secret"
+      help: "From Custom Connection app type (recommended for MCP)."
+    - key: XERO_TENANT_ID
+      label: "Tenant ID"
+      secret: false
+      required: false
+      placeholder: "Auto-discovered if blank"
+      help: "Use xero_connections tool to find your Tenant ID."
+  test:
+    endpoint: "https://api.xero.com/connections"
+    auth_style: bearer
+    auth_header: "Authorization"
+  oauth2:
+    grant_type: "client_credentials"
+    scopes:
+      - "accounting.transactions"
+      - "accounting.contacts"
+      - "accounting.settings"
+      - "accounting.reports.read"
+      - "payroll.employees"
+      - "payroll.timesheets"
+      - "payroll.payslips"
+    setup_url: "https://developer.xero.com/app/manage"
+  help:
+    - label: "Xero Developer Portal"
+      url: "https://developer.xero.com"
+    - label: "Create App"
+      url: "https://developer.xero.com/app/manage"
+    - label: "OAuth2 Scopes"
+      url: "https://developer.xero.com/documentation/guides/oauth2/scopes"
 
 install:
   runtime: uv
   package: xero-blade-mcp
 
-environment:
-  required:
-    - XERO_CLIENT_ID
-    - XERO_CLIENT_SECRET
-  optional:
-    - XERO_ACCESS_TOKEN
-    - XERO_TENANT_ID
-    - XERO_WRITE_ENABLED
-    - XERO_WEBHOOK_KEY
-    - XERO_MCP_API_TOKEN
-    - XERO_MCP_TRANSPORT
-    - XERO_MCP_HOST
-    - XERO_MCP_PORT
+env:
+  - name: XERO_CLIENT_ID
+    description: "OAuth2 client ID"
+    secret: false
+  - name: XERO_CLIENT_SECRET
+    description: "OAuth2 client secret (Custom Connection)"
+    secret: true
+  - name: XERO_TENANT_ID
+    description: "Active organisation tenant ID"
+    secret: false
+  - name: XERO_ACCESS_TOKEN
+    description: "Pre-obtained access token (overrides OAuth)"
+    secret: true
+  - name: XERO_WRITE_ENABLED
+    description: "Enable write operations"
+    default: "false"
+  - name: XERO_WEBHOOK_KEY
+    description: "Webhook signing key for HMAC verification"
+    secret: true
+  - name: XERO_MCP_TRANSPORT
+    description: "Transport mode: stdio (default) or http"
+    default: "stdio"
+  - name: XERO_MCP_API_TOKEN
+    description: "Bearer token for HTTP transport auth"
+    secret: true
 
-tools: 53
+requires:
+  sidereal: ">=0.40"
+
+conformance:
+  required: "53/53"
+  last_tested: "2026-04-02"
