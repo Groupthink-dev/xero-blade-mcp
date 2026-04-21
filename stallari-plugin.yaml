@@ -1,5 +1,5 @@
 name: xero-blade-mcp
-version: "0.1.0"
+version: "0.1.1"
 description: "Xero Accounting + Payroll AU API operations — contacts, invoices, bills, bank transactions, payments, reports, and payroll. Token-efficient with pipe-delimited output and OAuth2 auto-refresh."
 author: groupthink-dev
 licence: MIT
